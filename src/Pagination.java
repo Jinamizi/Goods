@@ -15,7 +15,7 @@ public class Pagination extends JFrame {
     private JButton prevButton, nextButton;
     private ItemsTableModel tableModel;
     private final String PREVIOUS_BTN_TEXT = "<<", NEXT_BTN_TEXT = ">>";
-    private JLabel connectedStatus = new JLabel("Not Connected"), timeLabel = new JLabel("00 : 00");
+    private JLabel connectedStatus = new JLabel("Not Connected"), timeLabel = new JLabel("00:00:00");
 
     public Pagination() {
         // Initialize the table model with your data
@@ -29,7 +29,9 @@ public class Pagination extends JFrame {
         // Create the table using the table model
         table = new JTable(tableModel);
 
-        JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
+        infoPanel.add(connectedStatus);
+        infoPanel.add(timeLabel);
 
         // Create the scroll pane and add the table to it
         scrollPane = new JScrollPane(table);
@@ -50,6 +52,7 @@ public class Pagination extends JFrame {
         buttonPanel.add(nextButton);
 
         // Add the scroll pane and button panel to the frame
+        getContentPane().add(infoPanel, BorderLayout.NORTH);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
