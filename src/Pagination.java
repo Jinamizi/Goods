@@ -6,30 +6,42 @@ import java.sql.Connection;
 import javax.swing.table.AbstractTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import javax.swing.JButton;
 
 public class Pagination extends JFrame {
     private JTable table;
-    public JScrollPane scrollPane;
-    public JButton prevButton, nextButton;
+    private JScrollPane scrollPane;
+    private JButton prevButton, nextButton;
+    private ItemsTableModel tableModel;
+    private final String PREVIOUS_BTN_TEXT = "<<", NEXT_BTN_TEXT = ">>";
+    private JLabel connectedStatus = new JLabel("Not Connected"), timeLabel = new JLabel("00 : 00");
 
     public Pagination() {
         // Initialize the table model with your data
-        ItemsTableModel tableModel = new ItemsTableModel();
+        try {
+            tableModel = new ItemsTableModel();
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(this, "An error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
 
         // Create the table using the table model
         table = new JTable(tableModel);
+
+        JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
 
         // Create the scroll pane and add the table to it
         scrollPane = new JScrollPane(table);
 
         // Create the previous button
-        prevButton = new JButton("Previous");
+        prevButton = new JButton(PREVIOUS_BTN_TEXT);
         prevButton.setEnabled(false);
         prevButton.addActionListener(new MyButtonActionListener());
 
         // Create the next button
-        nextButton = new JButton("Next");
+        nextButton = new JButton(NEXT_BTN_TEXT);
+        nextButton.setEnabled(MyGlobals.ITEMS.length > MyGlobals.ITEMS_PER_PAGE);
         nextButton.addActionListener(new MyButtonActionListener());
 
         // Create a panel to hold the buttons
@@ -43,7 +55,6 @@ public class Pagination extends JFrame {
 
         // Set the frame properties
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Pagination Example");
         pack();
         setVisible(true);
 
@@ -56,12 +67,11 @@ public class Pagination extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             // Get the source of the action event
-            MyGlobals.CURRENT_PAGE = ((JButton) e.getSource()).getText().equals("prev") ? MyGlobals.CURRENT_PAGE-- : MyGlobals.CURRENT_PAGE--;
+            MyGlobals.CURRENT_PAGE = ((JButton) e.getSource()).getText().equals(PREVIOUS_BTN_TEXT) ? MyGlobals.CURRENT_PAGE - 1 : MyGlobals.CURRENT_PAGE + 1;
             prevButton.setEnabled(MyGlobals.CURRENT_PAGE > 1);
             nextButton.setEnabled((MyGlobals.CURRENT_PAGE * MyGlobals.ITEMS_PER_PAGE) < MyGlobals.ITEMS.length);
-
+            tableModel.fireTableStructureChanged();
         }
     }
-
 
 }

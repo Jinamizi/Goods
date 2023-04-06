@@ -18,21 +18,20 @@ public class ItemsTableModel extends AbstractTableModel {
     private String query = "SELECT id, name, price, total_goods, total FROM items";
     private boolean connectedToDB = false; //keep track of db connection status
 
-    /*public ItemsTableModel(String url, String username, String password) throws SQLException {
-        connection = DriverManager.getConnection(url, username, password);
-        // create Statement to query database
-        statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        connectedToDB = true;
+    public ItemsTableModel() throws SQLException {
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Goods", "root", "mysqltonny123!");
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            connectedToDB = true;
+            updateData();
+        }catch ( SQLException e){
+            throw e;
+        }
 
         updateData();
-    }*/
+    }
 
     public void updateData() throws SQLException, IllegalStateException {
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Goods", "root", "mysqltonny123!");
-        // create Statement to query database
-        statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        connectedToDB = true;
-
         resultSet = statement.executeQuery(query);
         metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
